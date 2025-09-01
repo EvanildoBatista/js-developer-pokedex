@@ -33,3 +33,33 @@ pokeApi.getPokemons = (offset = 0, limit = 5) => {
         .then((detailRequests) => Promise.all(detailRequests))
         .then((pokemonsDetails) => pokemonsDetails)
 }
+
+function convertPokeApiMoreDetailToPokemonMoreDetail(pokeDetail) {
+    const pokemon = new PokemonMoreDetail()
+    pokemon.id = pokeDetail.id
+    pokemon.name = pokeDetail.name
+
+    const types = pokeDetail.types.map((typeSlot) => typeSlot.type.name)
+    pokemon.types = types
+
+    pokemon.photo = pokeDetail.sprites.other.dream_world.front_default
+
+    //const abilities = pokeDetail.abilities.map((abilitySlot) => abilitySlot.ability.name)
+    //pokemon.abilities = abilities
+
+    const stats = pokeDetail.stats.map((statSlot) => ({
+        name: statSlot.stat.name,
+        base: statSlot.base_stat
+    }))
+    pokemon.stats = stats
+    console.log(`Pokemon loaded`);
+    console.log(pokemon);
+    return pokemon
+}
+
+pokeApi.getPokemonMoreDetail = async (pokemonId) => {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+    const data = await response.json();
+    return convertPokeApiMoreDetailToPokemonMoreDetail(data);
+}
+
